@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import { Link } from "react-router-dom";
-const socket = socketIOClient("127.0.0.1:4000");
+const socket = socketIOClient("http://18.191.86.253:4000");
 class GoodList extends Component {
   constructor(args) {
     super(args);

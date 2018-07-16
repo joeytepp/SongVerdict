@@ -11,7 +11,7 @@ const verdict = "None";
 const ready = false;
 const likes = 0;
 const dislikes = 0;
-const socket = socketIOClient("127.0.0.1:4000");
+const socket = socketIOClient("http://18.191.86.253:4000");
 
 class Home extends Component {
   constructor(props) {
