@@ -90,7 +90,16 @@ function getSong() {
         }
         return getAccessToken();
       }
-      let songs = body.tracks.items.map(i => {
+
+      let songs = body.tracks.items.filter(
+        song => song.album.images[1] && song.preview_url
+      );
+
+      if (!songs.length) {
+        getSong();
+      }
+
+      songs = songs.map(i => {
         return {
           song: i.name,
           artist: i.artists[0].name,
@@ -99,7 +108,7 @@ function getSong() {
           art: i.album.images[1].url
         };
       });
-      songs = songs.filter(song => song.art && song.url);
+
       let index = getRandom(songs.length);
       lastSong = currentSong;
       currentSong = songs[index];
