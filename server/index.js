@@ -9,8 +9,7 @@ const refreshToken = Buffer.from(
 ).toString("base64");
 const Song = require("./Song");
 
-var accessToken =
-  "BQD8JKnO0JsyTisxCBTurmXtpYmJTreKRGJCYZJUOYNu91wMD98KqI3TxIai8Lhh6fKeFQ13tzN_PR9hRgY";
+var accessToken = "abc123"; // Should fail on first attempt
 var num = 0;
 var likes = 0;
 var dislikes = 0;
@@ -35,8 +34,10 @@ mongoose.connect(process.env.MONGO_URL);
 getSong();
 
 client.on("connection", socket => {
-  let time = 30 - Math.floor((new Date().getTime() - startTime) / 1000);
-  socket.emit("startTime", { time });
+  socket.on("getTime", res => {
+    let time = 30 - Math.floor((new Date().getTime() - startTime) / 1000);
+    socket.emit("startTime", { time });
+  });
 
   socket.on("opinion", data => {
     likes += data.likes;

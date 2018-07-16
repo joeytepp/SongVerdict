@@ -1,45 +1,29 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import socketIOClient from "socket.io-client";
 import "font-awesome/css/font-awesome.css";
 import "./App.css";
 import Button from "./Button";
 import Panel from "./Panel";
+import Header from "./Header";
 
 // Defaults
 const verdict = "None";
 const ready = false;
 const likes = 0;
 const dislikes = 0;
-const socket = socketIOClient("http://18.191.86.253:4000");
+const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = { verdict, verdict, song: null, ready, likes, dislikes };
+    socket.emit("getTime", {});
   }
 
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <Link to="/">
-            <h1 align="left" className="App-title">
-              SongVerdict
-            </h1>
-          </Link>
-          <div className="links">
-            <h1 id="list" className="App-title" align="right">
-              <a id="good">
-                <Link to="/lists/good">Good Songs</Link>
-              </a>{" "}
-              /{" "}
-              <a id="bad">
-                <Link to="/lists/bad">Bad Songs</Link>
-              </a>
-            </h1>
-          </div>
-        </div>
+        <Header />
         <h1 className="App-intro" />
         <br />
         <Panel
@@ -91,8 +75,9 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    console.log("mounted");
+    console.log(process.env);
     socket.on("startTime", time => {
+      console.log("Starting start time");
       this.setState(time);
       setInterval(() => {
         if (this.state.time > 0) {

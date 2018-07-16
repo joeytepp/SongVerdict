@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-import { Link } from "react-router-dom";
 import FontAwesome from "react-fontawesome";
+import Header from "./Header";
 
-const socket = socketIOClient("http://18.191.86.253:4000");
+const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
 class BadList extends Component {
   constructor(args) {
     super(args);
@@ -13,24 +13,7 @@ class BadList extends Component {
     socket.emit("BadList", {});
     return (
       <div>
-        <div className="App-header">
-          <Link to="/">
-            <h1 align="left" className="App-title">
-              SongVerdict
-            </h1>
-          </Link>
-          <div className="links">
-            <h1 id="list" className="App-title" align="right">
-              <a id="good">
-                <Link to="/lists/good">Good Songs</Link>
-              </a>{" "}
-              /{" "}
-              <a id="bad">
-                <Link to="/lists/bad">Bad Songs</Link>
-              </a>
-            </h1>
-          </div>
-        </div>
+        <Header />
         <h1 align="center">Bad songs, as voted by you :)</h1>
         {this.state.list.map(i => {
           return (

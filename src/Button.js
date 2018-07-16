@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import FontAwesome from "react-fontawesome";
 
 const Button = props => {
