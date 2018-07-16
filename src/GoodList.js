@@ -20,11 +20,11 @@ class GoodList extends Component {
           <div className="links">
             <h1 id="list" className="App-title" align="right">
               <a id="good">
-                <Link to="lists/good">Good Songs</Link>
+                <Link to="/lists/good">Good Songs</Link>
               </a>{" "}
               /{" "}
               <a id="bad">
-                <Link to="lists/bad">Bad Songs</Link>
+                <Link to="/lists/bad">Bad Songs</Link>
               </a>
             </h1>
           </div>
