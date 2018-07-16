@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import { Link } from "react-router-dom";
+import FontAwesome from "react-fontawesome";
+
 const socket = socketIOClient("http://18.191.86.253:4000");
 class GoodList extends Component {
   constructor(args) {
@@ -33,7 +35,11 @@ class GoodList extends Component {
         {this.state.list.map(i => {
           return (
             <div className="Player">
-              <img src={i.art} alt="" width="20" height="20" /> Song: {i.song}
+              <img src={i.art} alt="" width="20" height="20" /> Song: {i.song}{" "}
+              <p>
+                <FontAwesome name="thumbs-up" /> {i.likes}{" "}
+                <FontAwesome name="thumbs-down" /> {i.dislikes}
+              </p>
               <p>Artist: {i.artist}</p>
               <p>Album: {i.album}</p>
             </div>
