@@ -1,0 +1,27 @@
+{
+  "name": "demo-radio",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.0",
+    "@fortawesome/free-solid-svg-icons": "^5.1.0",
+    "axios": "^0.18.0",
+    "dotenv": "^6.0.0",
+    "font-awesome": "^4.7.0",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.2.3",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-fontawesome": "^1.6.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.4",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

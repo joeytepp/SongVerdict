@@ -1,0 +1,91 @@
+.App {
+  text-align: center;
+  color: white;
+}
+
+.App-header {
+  background-color: white;
+  height: 40px;
+  padding: 20px;
+  color: black;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.Player {
+  padding: 10px;
+  margin: 0 auto;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  box-shadow: 10px 10px;
+  width: 500px;
+}
+
+.abovePlayer {
+  padding: 10px;
+  margin: 0 auto;
+  border: 1px solid black;
+  color: white;
+  box-shadow: 10px 10px;
+  width: 500px;
+}
+
+button {
+  padding: 10px;
+  margin: 20px;
+  width: 150px;
+  font-size: 1.5em;
+  box-shadow: 10px 10px;
+  border-radius: 20px;
+  background-color: lightslategray;
+}
+
+button:focus {
+  outline: 0;
+}
+.selected {
+  background-color: white;
+}
+
+.unselected {
+  background-color: lightslategray;
+}
+
+#source {
+  font-size: 10px;
+}
+
+#lists {
+  padding: 10px;
+}
+div#good {
+  background-color: green;
+}
+
+div#bad {
+  background-color: red;
+}
+
+div#neutral {
+  background-color: grey;
+}
+a#good {
+  color: green;
+}
+
+a#bad {
+  color: red;
+}
+
+#buttons {
+  color: white;
+}
