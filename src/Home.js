@@ -16,7 +16,16 @@ const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
 class Home extends Component {
   constructor(props) {
     super(props);
-    this.state = { verdict, verdict, song: null, ready, likes, dislikes };
+    this.state = {
+      verdict,
+      verdict,
+      song: null,
+      ready,
+      likes,
+      dislikes,
+      noAutoplay: this.checkAuto(),
+      iframeClass: "Safari"
+    };
     socket.emit("getTime", {});
   }
 
@@ -34,8 +43,12 @@ class Home extends Component {
         <div className="Player">
           {this.state.ready ? (
             <div>
-              <iframe hidden="true" src={this.state.song.url} />
-              <img alt="" src={this.state.song.art} />
+              <img
+                onClick={this.onFrameClicked}
+                alt=""
+                src={this.state.song.art}
+              />
+              {this.iframe()}
               <br />
               <br />
               <h3>{this.state.song.artist}</h3>
@@ -74,8 +87,28 @@ class Home extends Component {
     );
   }
 
+  iframe() {
+    if (this.state.noAutoplay) {
+      return (
+        <iframe
+          height="50px"
+          id={this.state.iframeClass}
+          src={this.state.song.url}
+        />
+      );
+    }
+    return <iframe hidden="true" src={this.state.song.url} />;
+  }
+
+  onFrameClicked = () => {
+    if (this.state.iframeClass == "Safari") {
+      this.setState({ iframeClass: "notSafari" });
+    } else {
+      this.setState({ iframeClass: "Safari" });
+    }
+  };
+
   componentDidMount() {
-    console.log(process.env);
     socket.on("startTime", time => {
       console.log("Starting start time");
       this.setState(time);
@@ -93,6 +126,9 @@ class Home extends Component {
         this.setState({
           song: currentSong
         });
+      }
+      if (this.state.noAutoplay && !this.state.ready) {
+        alert("Press on album artwork to show / hide the player");
       }
       this.setState({
         verdict: "None",
@@ -154,6 +190,24 @@ class Home extends Component {
       }
     }
   };
+
+  isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
+
+  checkAuto() {
+    if (this.isMobile()) return true;
+    let ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf("safari") != -1) {
+      if (ua.indexOf("chrome") > -1) {
+        return false; // Chrome
+      } else {
+        return true; // Safari
+      }
+    }
+  }
 }
 
 export default Home;

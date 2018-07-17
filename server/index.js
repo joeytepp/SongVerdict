@@ -104,7 +104,7 @@ function getSong() {
           song: i.name,
           artist: i.artists[0].name,
           album: i.album.name,
-          url: i.preview_url,
+          url: i.preview_url.replace("https", "http"),
           art: i.album.images[1].url
         };
       });

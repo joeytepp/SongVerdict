@@ -89,3 +89,9 @@ a#bad {
 #buttons {
   color: white;
 }
+
+iframe#notSafari {
+  height: 1px;
+  width: 1px;
+  border: none;
+}
