@@ -67,7 +67,10 @@ class Home extends Component {
               <p id="source">
                 Source: <a href="jnntt.tumblr.com">jnntt.tumblr.com</a>
               </p>
-              <h3>Joining the party in {this.state.time}</h3>
+              <h3>
+                Joining the party in{" "}
+                {this.state.time ? this.state.time : "a moment"}
+              </h3>
             </div>
           )}
         </div>
