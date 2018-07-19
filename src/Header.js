@@ -11,13 +11,12 @@ const Header = props => {
       </Link>
       <div className="links">
         <h1 id="list" className="App-title" align="right">
-          <Link to="/lists/good">
+          <Link to="/lists/good" id="good">
             Good Songs
-            <a id="good" />
           </Link>{" "}
           /{" "}
-          <Link to="/lists/bad">
-            <a id="bad">Bad Songs</a>
+          <Link to="/lists/bad" id="bad">
+            Bad Songs
           </Link>
         </h1>
       </div>

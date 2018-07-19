@@ -3,22 +3,22 @@ dotenv.config();
 
 const client = require("socket.io").listen(4000).sockets;
 const mongoose = require("mongoose");
-
-const refreshToken = Buffer.from(
-  `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-).toString("base64");
-const Song = require("./Song");
-
-var accessToken = "abc123"; // Should fail on first attempt
-var num = 0;
-var likes = 0;
-var dislikes = 0;
-var currentSong, lastSong;
-var started = false;
-var startTime;
 const request = require("request");
 
-const getRandom = num => Math.floor(Math.random() * num);
+const { base64encode, getRandom, randomLetter } = require("./util");
+const Song = require("./Song");
+const refreshToken = base64encode(
+  `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+);
+
+let numOnline = 0;
+let accessToken = "abc123";
+let likes = 0;
+let dislikes = 0;
+let currentSong, lastSong;
+let started = false;
+let startTime;
+let intervalId;
 
 const options = {
   method: "POST",
@@ -34,7 +34,9 @@ mongoose.connect(process.env.MONGO_URL);
 getSong();
 
 client.on("connection", socket => {
-  socket.on("getTime", res => {
+  socket.on("getTime", () => {
+    numOnline++;
+    client.emit("numOnline", { numOnline });
     let time = 30 - Math.floor((new Date().getTime() - startTime) / 1000);
     socket.emit("startTime", { time });
   });
@@ -42,10 +44,19 @@ client.on("connection", socket => {
   socket.on("opinion", data => {
     likes += data.likes;
     dislikes += data.dislikes;
-    socket.broadcast.emit("opinionReceived", data);
+    if (dislikes == numOnline && numOnline >= 3) {
+      client.emit("test", currentSong);
+      clearInterval(intervalId);
+      started = false;
+      likes = 0;
+      dislikes = 0;
+      getSong();
+    } else {
+      socket.broadcast.emit("opinionReceived", data);
+    }
   });
 
-  socket.on("GoodList", res => {
+  socket.on("GoodList", () => {
     Song.find({ verdict: { $gt: 0 } })
       .sort({ verdict: -1 })
       .then(data => {
@@ -53,22 +64,21 @@ client.on("connection", socket => {
       });
   });
 
-  socket.on("BadList", res => {
+  socket.on("BadList", () => {
     Song.find({ verdict: { $lt: 0 } })
       .sort({ verdict: +1 })
       .then(data => {
         socket.emit("BadListReceived", data);
       });
   });
-});
 
-client.on("disconnect", socket => {
-  num--;
-  console.log(num);
+  socket.on("updateNumOnline", data => {
+    numOnline = data.num;
+    client.emit("numOnline", { numOnline });
+  });
 });
 
 function getSong() {
-  let q = String.fromCharCode(97 + Math.floor(Math.random() * 26));
   request(
     {
       url: "http://api.spotify.com/v1/search",
@@ -77,13 +87,17 @@ function getSong() {
         Authorization: `Bearer ${accessToken}`
       },
       qs: {
-        q,
+        q: randomLetter(),
         type: "track",
         offset: getRandom(10000)
       }
     },
     (err, res, body) => {
-      body = JSON.parse(body);
+      try {
+        body = JSON.parse(body);
+      } catch (err) {
+        return getSong();
+      }
       if (!body.tracks) {
         if (body.error.status == 404) {
           return getSong();
@@ -113,26 +127,7 @@ function getSong() {
       lastSong = currentSong;
       currentSong = songs[index];
       if (!started) {
-        setInterval(() => {
-          startTime = new Date().getTime();
-          client.emit("test", currentSong);
-          if (lastSong && likes - dislikes !== 0) {
-            let saveSong = new Song({
-              _id: new mongoose.Types.ObjectId(),
-              ...lastSong,
-              likes,
-              dislikes,
-              verdict: likes - dislikes
-            });
-            saveSong
-              .save()
-              .then(res => console.log(res))
-              .catch(err => console.log(err));
-          }
-          likes = 0;
-          dislikes = 0;
-          getSong();
-        }, 30 * 1000);
+        intervalId = intervalSet();
         started = true;
       }
     }
@@ -141,9 +136,27 @@ function getSong() {
 
 function getAccessToken() {
   request(options, (err, res, body) => {
-    console.log(body);
     accessToken = JSON.parse(body).access_token;
-    console.log("access token is now", accessToken);
     return getSong();
   });
+}
+
+function intervalSet() {
+  return setInterval(() => {
+    startTime = new Date().getTime();
+    client.emit("test", currentSong);
+    if (lastSong && likes - dislikes !== 0) {
+      let saveSong = new Song({
+        _id: new mongoose.Types.ObjectId(),
+        ...lastSong,
+        likes,
+        dislikes,
+        verdict: likes - dislikes
+      });
+      saveSong.save().catch(err => console.log(err));
+    }
+    likes = 0;
+    dislikes = 0;
+    getSong();
+  }, 30 * 1000);
 }

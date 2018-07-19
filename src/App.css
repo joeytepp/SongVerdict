@@ -79,10 +79,12 @@ div#neutral {
   background-color: grey;
 }
 a#good {
+  text-decoration: none;
   color: green;
 }
 
 a#bad {
+  text-decoration: none;
   color: red;
 }
 

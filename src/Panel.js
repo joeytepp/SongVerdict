@@ -20,6 +20,7 @@ const Panel = props => {
           <FontAwesome name="thumbs-up" /> {props.likes}
           {"    "}
           <FontAwesome name="thumbs-down" /> {props.dislikes}
+          {numOnline(props.numOnline)}
         </span>
       </div>
     );
@@ -28,4 +29,9 @@ const Panel = props => {
   }
 };
 
+const numOnline = num => {
+  if (num) {
+    return ` (${num}) `;
+  }
+};
 export default Panel;

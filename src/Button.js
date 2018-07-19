@@ -5,11 +5,11 @@ const Button = props => {
   if (props.ready) {
     return (
       <button
-        className={props.current == props.type ? "selected" : "unselected"}
+        className={props.current === props.type ? "selected" : "unselected"}
         onClick={props.updateState}
       >
         <FontAwesome
-          name={props.type == "Like" ? "thumbs-up" : "thumbs-down"}
+          name={props.type === "Like" ? "thumbs-up" : "thumbs-down"}
         />
         {` ${props.type}`}
       </button>

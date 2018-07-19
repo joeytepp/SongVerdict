@@ -12,12 +12,12 @@ const ready = false;
 const likes = 0;
 const dislikes = 0;
 const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
+let intervalId;
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      verdict,
       verdict,
       song: null,
       ready,
@@ -33,12 +33,12 @@ class Home extends Component {
     return (
       <div className="App">
         <Header />
-        <h1 className="App-intro" />
         <br />
         <Panel
           likes={this.state.likes}
           dislikes={this.state.dislikes}
           ready={this.state.ready}
+          numOnline={this.state.numOnline}
         />
         <div className="Player">
           {this.state.ready ? (
@@ -94,17 +94,20 @@ class Home extends Component {
     if (this.state.noAutoplay) {
       return (
         <iframe
+          title="spotify-player"
           height="50px"
           id={this.state.iframeClass}
           src={this.state.song.url}
         />
       );
     }
-    return <iframe hidden="true" src={this.state.song.url} />;
+    return (
+      <iframe title="spotify-player" hidden="true" src={this.state.song.url} />
+    );
   }
 
   onFrameClicked = () => {
-    if (this.state.iframeClass == "Safari") {
+    if (this.state.iframeClass === "Safari") {
       this.setState({ iframeClass: "notSafari" });
     } else {
       this.setState({ iframeClass: "Safari" });
@@ -112,19 +115,21 @@ class Home extends Component {
   };
 
   componentDidMount() {
+    window.addEventListener("beforeunload", () => {
+      socket.emit("updateNumOnline", { num: this.state.numOnline - 1 });
+    });
     socket.on("startTime", time => {
-      console.log("Starting start time");
       this.setState(time);
-      setInterval(() => {
+      intervalId = setInterval(() => {
         if (this.state.time > 0) {
           this.setState({ time: this.state.time - 1 });
         }
       }, 1000);
     });
     socket.on("test", song => {
-      clearInterval();
+      clearInterval(intervalId);
       let currentSong = this.state.song;
-      if (currentSong && currentSong.url == this.state.song.url) {
+      if (currentSong && currentSong.url === this.state.song.url) {
         currentSong.url = "";
         this.setState({
           song: currentSong
@@ -148,10 +153,13 @@ class Home extends Component {
         dislikes: this.state.dislikes + data.dislikes
       });
     });
+    socket.on("numOnline", data => {
+      this.setState(data);
+    });
   }
   onButtonClicked = verdict => () => {
     this.onVerdictChanged(this.state.verdict, verdict);
-    if (this.state.verdict == verdict) {
+    if (this.state.verdict === verdict) {
       this.setState({ verdict: "None" });
     } else {
       this.setState({
@@ -161,8 +169,8 @@ class Home extends Component {
   };
 
   onVerdictChanged = (prev, curr) => {
-    if (prev == curr) {
-      if (prev == "Like") {
+    if (prev === curr) {
+      if (prev === "Like") {
         this.setState({ likes: this.state.likes - 1 });
         socket.emit("opinion", { likes: -1, dislikes: 0 });
       } else {
@@ -170,20 +178,20 @@ class Home extends Component {
         socket.emit("opinion", { likes: 0, dislikes: -1 });
       }
     } else {
-      if (prev == "Like") {
+      if (prev === "Like") {
         this.setState({
           likes: this.state.likes - 1,
           dislikes: this.state.dislikes + 1
         });
         socket.emit("opinion", { likes: -1, dislikes: 1 });
-      } else if (prev == "Dislike") {
+      } else if (prev === "Dislike") {
         this.setState({
           likes: this.state.likes + 1,
           dislikes: this.state.dislikes - 1
         });
         socket.emit("opinion", { likes: 1, dislikes: -1 });
       } else {
-        if (curr == "Like") {
+        if (curr === "Like") {
           this.setState({ likes: this.state.likes + 1 });
           socket.emit("opinion", { likes: 1, dislikes: 0 });
         } else {
@@ -203,7 +211,7 @@ class Home extends Component {
   checkAuto() {
     if (this.isMobile()) return true;
     let ua = navigator.userAgent.toLowerCase();
-    if (ua.indexOf("safari") != -1) {
+    if (ua.indexOf("safari") !== -1) {
       if (ua.indexOf("chrome") > -1) {
         return false; // Chrome
       } else {
@@ -211,6 +219,12 @@ class Home extends Component {
       }
     }
   }
+
+  leaveSocket = num => () => {
+    num--;
+    alert(num);
+    socket.emit("updateNumOnline", { num });
+  };
 }
 
 export default Home;
