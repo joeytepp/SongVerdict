@@ -22,6 +22,10 @@ const schema = new Schema({
     type: String,
     required: true
   },
+  externalUrl: {
+    type: String,
+    required: true
+  },
   art: {
     type: String,
     required: true

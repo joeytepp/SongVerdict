@@ -1,3 +1,10 @@
+@media screen and (max-width: 730px) {
+  .hideIfSmall {
+    width: 0;
+    font-size: 0;
+  }
+}
+
 .App {
   text-align: center;
   color: white;
@@ -27,9 +34,27 @@
   border: 1px solid black;
   color: black;
   box-shadow: 10px 10px;
-  width: 500px;
+  width: 80vw;
 }
 
+#logo {
+  margin-left: 10vw;
+}
+.logopic {
+  margin-top: -18px;
+  margin-right: 10px;
+}
+.logotext {
+  margin-top: 0px;
+}
+#goodBad {
+  margin-top: -10px;
+  margin-right: 10vw;
+}
+
+#btnList {
+  margin-right: -100px;
+}
 .abovePlayer {
   padding: 10px;
   margin: 0 auto;
@@ -96,4 +121,18 @@ iframe#notSafari {
   height: 1px;
   width: 1px;
   border: none;
+}
+
+#link {
+  text-decoration: none;
+  color: black;
+}
+
+img {
+  user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }

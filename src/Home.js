@@ -50,17 +50,20 @@ class Home extends Component {
               />
               {this.iframe()}
               <br />
-              <br />
-              <h3>{this.state.song.artist}</h3>
-              <h2>{this.state.song.song}</h2>
-              <h4>{this.state.song.album}</h4>
+              <div>
+                <h3>{this.state.song.artist}</h3>
+                <a href={this.state.song.externalUrl} target="_blank">
+                  <h2>{this.state.song.song}</h2>
+                </a>
+                <h4>{this.state.song.album}</h4>
+              </div>
             </div>
           ) : (
             <div>
               <h2>Listen to songs, voice your opinion</h2>
               <img
-                width="400"
-                height="400"
+                width="60%"
+                height="60%"
                 alt=""
                 src="http://33.media.tumblr.com/77f77b33f2b06cfe11a0865926ee4280/tumblr_ndd8yf5xW61s2ngx4o1_1280.gif"
               />
@@ -114,10 +117,11 @@ class Home extends Component {
     }
   };
 
+  onMount = () =>
+    socket.emit("updateNumOnline", { num: this.state.numOnline - 1 });
+
   componentDidMount() {
-    window.addEventListener("beforeunload", () => {
-      socket.emit("updateNumOnline", { num: this.state.numOnline - 1 });
-    });
+    window.addEventListener("beforeunload", this.onMount);
     socket.on("startTime", time => {
       this.setState(time);
       intervalId = setInterval(() => {
@@ -156,6 +160,10 @@ class Home extends Component {
     socket.on("numOnline", data => {
       this.setState(data);
     });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("beforeunload", this.onMount);
   }
   onButtonClicked = verdict => () => {
     this.onVerdictChanged(this.state.verdict, verdict);

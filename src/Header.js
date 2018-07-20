@@ -1,25 +1,39 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import FontAwesome from "react-fontawesome";
+import logo from "./logo.png";
 
 const Header = props => {
   return (
     <div className="App-header">
-      <Link to="/">
-        <h1 align="left" className="App-title">
-          SongVerdict
-        </h1>
+      <Link id="link" to="/">
+        <div>
+          <img
+            id="logo"
+            className="logopic"
+            align="left"
+            height="75px"
+            width="75px"
+            src={logo}
+            alt=""
+          />{" "}
+          <h1 className="hideIfSmall logotext" align="left" id="logo">
+            SongVerdict
+          </h1>
+        </div>
       </Link>
-      <div className="links">
-        <h1 id="list" className="App-title" align="right">
-          <Link to="/lists/good" id="good">
-            Good Songs
-          </Link>{" "}
-          /{" "}
-          <Link to="/lists/bad" id="bad">
-            Bad Songs
-          </Link>
-        </h1>
-      </div>
+
+      <h1 id="goodBad" align="right">
+        <Link id="link" to="/lists/good">
+          <FontAwesome name="thumbs-o-up" size="2x" />
+        </Link>
+        {"                              "}
+        <Link id="link" to="/lists/bad">
+          <FontAwesome name="thumbs-o-down" size="2x" />
+        </Link>
+        {"                              "}
+        <FontAwesome name="list-ul" size="2x" />
+      </h1>
     </div>
   );
 };

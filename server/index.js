@@ -119,6 +119,7 @@ function getSong() {
           artist: i.artists[0].name,
           album: i.album.name,
           url: i.preview_url.replace("https", "http"),
+          externalUrl: i.external_urls.spotify,
           art: i.album.images[1].url
         };
       });
