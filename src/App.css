@@ -1,4 +1,4 @@
-@media screen and (max-width: 730px) {
+@media screen and (max-width: 735px) {
   .hideIfSmall {
     width: 0;
     font-size: 0;
@@ -37,15 +37,16 @@
   width: 80vw;
 }
 
-#logo {
-  margin-left: 10vw;
-}
 .logopic {
   margin-top: -18px;
   margin-right: 10px;
 }
 .logotext {
   margin-top: 0px;
+}
+
+#logo {
+  margin-left: 10vw;
 }
 #goodBad {
   margin-top: -10px;
@@ -71,22 +72,26 @@ button {
   font-size: 1.5em;
   box-shadow: 10px 10px;
   border-radius: 20px;
-  background-color: lightslategray;
+  background-color: lightgray;
+}
+
+.test {
+  background-color: red;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  transition: 0.5s;
 }
 
 button:focus {
   outline: 0;
 }
-.selected {
+button.selected {
   background-color: white;
 }
 
 .unselected {
-  background-color: lightslategray;
-}
-
-#source {
-  font-size: 10px;
+  background-color: lightgray;
 }
 
 #lists {
@@ -101,7 +106,7 @@ div#bad {
 }
 
 div#neutral {
-  background-color: grey;
+  background-color: black;
 }
 a#good {
   text-decoration: none;
@@ -117,10 +122,8 @@ a#bad {
   color: white;
 }
 
-iframe#notSafari {
-  height: 1px;
-  width: 1px;
-  border: none;
+.spotify-player {
+  display: none;
 }
 
 #link {
@@ -136,3 +139,10 @@ img {
   -webkit-user-select: none;
   -ms-user-select: none;
 }
+
+a {
+  color: black;
+}
+/* .justLiked {
+
+} */

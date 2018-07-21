@@ -23,15 +23,28 @@ class Home extends Component {
       ready,
       likes,
       dislikes,
-      noAutoplay: this.checkAuto(),
-      iframeClass: "Safari"
+      hasStarted: false
     };
-    socket.emit("getTime", {});
+    this.playerRef = React.createRef();
   }
 
   render() {
     return (
       <div className="App">
+        <audio
+          ref={this.playerRef}
+          controls
+          autoPlay
+          loop
+          playsInline
+          name="media"
+          className="spotify-player"
+        >
+          <source
+            type="audio/mpeg"
+            src={this.state.song ? this.state.song.url : ""}
+          />
+        </audio>
         <Header />
         <br />
         <Panel
@@ -43,37 +56,45 @@ class Home extends Component {
         <div className="Player">
           {this.state.ready ? (
             <div>
-              <img
-                onClick={this.onFrameClicked}
-                alt=""
-                src={this.state.song.art}
-              />
-              {this.iframe()}
+              <div>
+                <a href={this.state.song.externalUrl} target="_blank">
+                  <img
+                    onClick={this.onFrameClicked}
+                    alt=""
+                    src={this.state.song.art}
+                  />
+                </a>
+              </div>
               <br />
               <div>
                 <h3>{this.state.song.artist}</h3>
-                <a href={this.state.song.externalUrl} target="_blank">
-                  <h2>{this.state.song.song}</h2>
-                </a>
+                <h2>{this.state.song.song}</h2>
                 <h4>{this.state.song.album}</h4>
               </div>
             </div>
           ) : (
             <div>
-              <h2>Listen to songs, voice your opinion</h2>
-              <img
-                width="60%"
-                height="60%"
-                alt=""
-                src="http://33.media.tumblr.com/77f77b33f2b06cfe11a0865926ee4280/tumblr_ndd8yf5xW61s2ngx4o1_1280.gif"
-              />
-              <p id="source">
-                Source: <a href="jnntt.tumblr.com">jnntt.tumblr.com</a>
-              </p>
-              <h3>
-                Joining the party in{" "}
-                {this.state.time ? this.state.time : "a moment"}
-              </h3>
+              <h2>&#x1F3B6; Listen to songs, &#x1F64B; Voice your opinion</h2>
+              <a href="https://jnntt.tumblr.com" target="_blank">
+                <img
+                  width="30%"
+                  height="30%"
+                  alt=""
+                  src="http://33.media.tumblr.com/77f77b33f2b06cfe11a0865926ee4280/tumblr_ndd8yf5xW61s2ngx4o1_1280.gif"
+                />
+              </a>
+              {this.state.hasStarted ? (
+                <h3>
+                  &#x1F389; Joining the party in{" "}
+                  {this.state.time ? this.state.time : "a moment"}
+                </h3>
+              ) : (
+                <div>
+                  <button width="auto" onClick={this.onStart}>
+                    Click to start
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -93,21 +114,14 @@ class Home extends Component {
     );
   }
 
-  iframe() {
-    if (this.state.noAutoplay) {
-      return (
-        <iframe
-          title="spotify-player"
-          height="50px"
-          id={this.state.iframeClass}
-          src={this.state.song.url}
-        />
-      );
-    }
-    return (
-      <iframe title="spotify-player" hidden="true" src={this.state.song.url} />
-    );
-  }
+  onStart = () => {
+    socket.emit("getTime", {});
+    try {
+      this.playerRef.current.load();
+      this.playerRef.current.play();
+    } catch (err) {}
+    this.setState({ hasStarted: true });
+  };
 
   onFrameClicked = () => {
     if (this.state.iframeClass === "Safari") {
@@ -117,8 +131,9 @@ class Home extends Component {
     }
   };
 
-  onMount = () =>
+  onMount = () => {
     socket.emit("updateNumOnline", { num: this.state.numOnline - 1 });
+  };
 
   componentDidMount() {
     window.addEventListener("beforeunload", this.onMount);
@@ -130,25 +145,27 @@ class Home extends Component {
         }
       }, 1000);
     });
-    socket.on("test", song => {
-      clearInterval(intervalId);
-      let currentSong = this.state.song;
-      if (currentSong && currentSong.url === this.state.song.url) {
-        currentSong.url = "";
+    socket.on("newSong", song => {
+      if (this.state.hasStarted) {
+        clearInterval(intervalId);
+        let currentSong = this.state.song;
+        if (currentSong) {
+          currentSong.url = "";
+          this.setState({
+            song: currentSong
+          });
+        }
         this.setState({
-          song: currentSong
+          verdict: "None",
+          song,
+          ready: true,
+          likes,
+          dislikes
         });
+        try {
+          this.playerRef.current.load();
+        } catch (err) {}
       }
-      if (this.state.noAutoplay && !this.state.ready) {
-        alert("Press on album artwork to show / hide the player");
-      }
-      this.setState({
-        verdict: "None",
-        song,
-        ready: true,
-        likes,
-        dislikes
-      });
     });
 
     socket.on("opinionReceived", data => {
@@ -163,6 +180,7 @@ class Home extends Component {
   }
 
   componentWillUnmount() {
+    this.onMount();
     window.removeEventListener("beforeunload", this.onMount);
   }
   onButtonClicked = verdict => () => {
@@ -208,30 +226,6 @@ class Home extends Component {
         }
       }
     }
-  };
-
-  isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  }
-
-  checkAuto() {
-    if (this.isMobile()) return true;
-    let ua = navigator.userAgent.toLowerCase();
-    if (ua.indexOf("safari") !== -1) {
-      if (ua.indexOf("chrome") > -1) {
-        return false; // Chrome
-      } else {
-        return true; // Safari
-      }
-    }
-  }
-
-  leaveSocket = num => () => {
-    num--;
-    alert(num);
-    socket.emit("updateNumOnline", { num });
   };
 }
 

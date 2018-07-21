@@ -17,7 +17,7 @@ let likes = 0;
 let dislikes = 0;
 let currentSong, lastSong;
 let started = false;
-let startTime;
+let startTime = new Date().getTime() + 500;
 let intervalId;
 
 const options = {
@@ -45,11 +45,12 @@ client.on("connection", socket => {
     likes += data.likes;
     dislikes += data.dislikes;
     if (dislikes == numOnline && numOnline >= 3) {
-      client.emit("test", currentSong);
+      client.emit("newSong", currentSong);
       clearInterval(intervalId);
       started = false;
       likes = 0;
       dislikes = 0;
+      startTime = new Date().getTime();
       getSong();
     } else {
       socket.broadcast.emit("opinionReceived", data);
@@ -145,7 +146,7 @@ function getAccessToken() {
 function intervalSet() {
   return setInterval(() => {
     startTime = new Date().getTime();
-    client.emit("test", currentSong);
+    client.emit("newSong", currentSong);
     if (lastSong && likes - dislikes !== 0) {
       let saveSong = new Song({
         _id: new mongoose.Types.ObjectId(),
@@ -154,7 +155,7 @@ function intervalSet() {
         dislikes,
         verdict: likes - dislikes
       });
-      saveSong.save().catch(err => console.log(err));
+      saveSong.save().catch(err => console.log(err)); // Some quality error handling
     }
     likes = 0;
     dislikes = 0;
