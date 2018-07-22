@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FontAwesome from "react-fontawesome";
 import logo from "./logo.png";
 
-const Header = props => {
+const Header = () => {
   return (
     <div className="App-header">
       <Link id="link" to="/">
@@ -32,7 +32,9 @@ const Header = props => {
           <FontAwesome name="thumbs-o-down" size="2x" />
         </Link>
         {"                              "}
-        <FontAwesome name="list-ul" size="2x" />
+        <Link id="link" to="/lists/all">
+          <FontAwesome name="list-ul" size="2x" />
+        </Link>
       </h1>
     </div>
   );

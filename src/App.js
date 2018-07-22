@@ -3,17 +3,17 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "font-awesome/css/font-awesome.css";
 import "./App.css";
 import Home from "./Home";
-import GoodList from "./GoodList";
-import BadList from "./BadList";
+import { GoodList, BadList, AllList } from "./List";
 
 class App extends Component {
   render() {
     return (
       <Router>
         <Switch>
+          <Route exact path="/" component={Home} />
           <Route path="/lists/good" component={GoodList} />
           <Route path="/lists/bad" component={BadList} />
-          <Route exact path="/" component={Home} />
+          <Route path="/lists/all" component={AllList} />
         </Switch>
       </Router>
     );

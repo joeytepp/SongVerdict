@@ -57,19 +57,21 @@ client.on("connection", socket => {
     }
   });
 
-  socket.on("GoodList", () => {
-    Song.find({ verdict: { $gt: 0 } })
-      .sort({ verdict: -1 })
+  socket.on("List", data => {
+    let { type } = data;
+    let verd = { $gte: 0 };
+    let sort = { _id: -1 };
+    if (type === "Good") {
+      verd = { $gt: 0 };
+      sort = { verdict: -1 };
+    } else if (type === "Bad") {
+      verd = { $lt: 0 };
+      sort = { verdict: +1 };
+    }
+    Song.find({ verdict: verd })
+      .sort(sort)
       .then(data => {
-        socket.emit("GoodListReceived", data);
-      });
-  });
-
-  socket.on("BadList", () => {
-    Song.find({ verdict: { $lt: 0 } })
-      .sort({ verdict: +1 })
-      .then(data => {
-        socket.emit("BadListReceived", data);
+        socket.emit(`${type}ListReceived`, data);
       });
   });
 

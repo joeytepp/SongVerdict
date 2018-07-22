@@ -4,17 +4,18 @@ import FontAwesome from "react-fontawesome";
 import Header from "./Header";
 
 const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
-class BadList extends Component {
+
+class List extends Component {
   constructor(args) {
     super(args);
     this.state = { list: [] };
   }
   render() {
-    socket.emit("BadList", {});
+    socket.emit("List", { type: this.type });
     return (
       <div>
         <Header />
-        <h1 align="center">Bad songs, as voted by you :)</h1>
+        <h1 align="center">{this.type} songs, as voted by you :)</h1>
         {this.state.list.map(i => {
           return (
             <div className="Player">
@@ -33,8 +34,29 @@ class BadList extends Component {
   }
 
   componentDidMount() {
-    socket.on("BadListReceived", list => this.setState({ list }));
+    socket.on(`${this.type}ListReceived`, list => this.setState({ list }));
   }
 }
 
-export default BadList;
+export class GoodList extends List {
+  constructor(args) {
+    super(args);
+    this.type = "Good";
+  }
+}
+
+export class BadList extends List {
+  constructor(args) {
+    super(args);
+    this.type = "Bad";
+  }
+}
+
+export class AllList extends List {
+  constructor(args) {
+    super(args);
+    this.type = "All";
+  }
+}
+
+export default AllList;

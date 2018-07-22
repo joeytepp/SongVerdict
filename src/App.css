@@ -33,8 +33,24 @@
   background-color: white;
   border: 1px solid black;
   color: black;
-  box-shadow: 10px 10px;
+  box-shadow: 10px 10px 5px black;
   width: 80vw;
+}
+
+#songInfo > h2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#songInfo > p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actual {
+  height: auto;
 }
 
 .logopic {
@@ -53,16 +69,27 @@
   margin-right: 10vw;
 }
 
+#songName {
+  padding: 5px;
+  margin: 0px;
+}
+
 #btnList {
   margin-right: -100px;
 }
-.abovePlayer {
-  padding: 10px;
-  margin: 0 auto;
-  border: 1px solid black;
-  color: white;
-  box-shadow: 10px 10px;
-  width: 500px;
+
+#startButton {
+  margin: 10px;
+}
+
+#coverArt {
+  height: 35vh;
+}
+
+.songInfo {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 5px;
 }
 
 button {
@@ -70,7 +97,7 @@ button {
   margin: 20px;
   width: 150px;
   font-size: 1.5em;
-  box-shadow: 10px 10px;
+  box-shadow: 10px 10px 5px black;
   border-radius: 20px;
   background-color: lightgray;
 }
@@ -128,6 +155,7 @@ a#bad {
 
 #link {
   text-decoration: none;
+  animation: none;
   color: black;
 }
 
@@ -143,6 +171,40 @@ img {
 a {
   color: black;
 }
-/* .justLiked {
 
-} */
+.new {
+  position: fixed;
+  color: lightgrey;
+  opacity: 0.5;
+
+  animation: floatIn;
+  animation-duration: 2s;
+  top: -100px;
+  left: 100px;
+}
+
+.Like {
+  left: vw/4;
+}
+
+.Dislike {
+  left: 75%;
+}
+
+@keyframes floatIn {
+  0% {
+    font-size: 100px;
+    display: block;
+    top: -100px;
+  }
+  100% {
+    font-size: 200px;
+    top: 1250px;
+    display: none;
+  }
+}
+
+.top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}

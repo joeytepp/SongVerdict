@@ -15,7 +15,7 @@ const verdicts = props => {
 const Panel = props => {
   if (props.ready) {
     return (
-      <div id={verdicts(props)} className="Player">
+      <div id={verdicts(props)} className="Player top">
         <span id="buttons">
           <FontAwesome name="thumbs-up" /> {props.likes}
           {"    "}
