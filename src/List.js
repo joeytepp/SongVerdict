@@ -15,18 +15,27 @@ class List extends Component {
     return (
       <div>
         <Header />
-        <h1 align="center">{this.type} songs, as voted by you :)</h1>
+        <h1 id="listTitle" align="center">
+          {this.type} songs{this.type === "All" ? "" : ", as voted by you :)"}
+        </h1>
         {this.state.list.map(i => {
           return (
-            <div className="Player">
-              <img src={i.art} alt="" width="20" height="20" /> Song: {i.song}{" "}
-              <p>
-                <FontAwesome name="thumbs-up" /> {i.likes}{" "}
-                <FontAwesome name="thumbs-down" /> {i.dislikes}
-              </p>
-              <p>Artist: {i.artist}</p>
-              <p>Album: {i.album}</p>
-            </div>
+            <a
+              id="list"
+              href={i.externalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="Player">
+                <img src={i.art} alt="" width="20" height="20" /> Song: {i.song}{" "}
+                <p>
+                  <FontAwesome name="thumbs-up" /> {i.likes}{" "}
+                  <FontAwesome name="thumbs-down" /> {i.dislikes}
+                </p>
+                <p>Artist: {i.artist}</p>
+                <p>Album: {i.album}</p>
+              </div>
+            </a>
           );
         })}
       </div>

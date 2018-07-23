@@ -30,7 +30,7 @@ const options = {
   form: { grant_type: "client_credentials" }
 };
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect("mongodb://127.0.0.1/SongVerdict");
 getSong();
 
 client.on("connection", socket => {
@@ -45,6 +45,7 @@ client.on("connection", socket => {
     likes += data.likes;
     dislikes += data.dislikes;
     if (dislikes == numOnline && numOnline >= 3) {
+      saveLastSong();
       client.emit("newSong", currentSong);
       clearInterval(intervalId);
       started = false;
@@ -59,7 +60,7 @@ client.on("connection", socket => {
 
   socket.on("List", data => {
     let { type } = data;
-    let verd = { $gte: 0 };
+    let verd = { $gte: -100000000000 };
     let sort = { _id: -1 };
     if (type === "Good") {
       verd = { $gt: 0 };
@@ -149,18 +150,22 @@ function intervalSet() {
   return setInterval(() => {
     startTime = new Date().getTime();
     client.emit("newSong", currentSong);
-    if (lastSong && likes - dislikes !== 0) {
-      let saveSong = new Song({
-        _id: new mongoose.Types.ObjectId(),
-        ...lastSong,
-        likes,
-        dislikes,
-        verdict: likes - dislikes
-      });
-      saveSong.save().catch(err => console.log(err)); // Some quality error handling
-    }
+    saveLastSong();
     likes = 0;
     dislikes = 0;
     getSong();
   }, 30 * 1000);
+}
+
+function saveLastSong() {
+  if (lastSong && numOnline > 0) {
+    let saveSong = new Song({
+      _id: new mongoose.Types.ObjectId(),
+      ...lastSong,
+      likes,
+      dislikes,
+      verdict: likes - dislikes
+    });
+    saveSong.save().catch(err => console.log(err)); // Some quality error handling
+  }
 }

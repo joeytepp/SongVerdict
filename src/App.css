@@ -35,6 +35,7 @@
   color: black;
   box-shadow: 10px 10px 5px black;
   width: 80vw;
+  text-decoration: none;
 }
 
 #songInfo > h2 {
@@ -97,9 +98,14 @@ button {
   margin: 20px;
   width: 150px;
   font-size: 1.5em;
-  box-shadow: 10px 10px 5px black;
+  box-shadow: 0 10px black;
   border-radius: 20px;
   background-color: lightgray;
+}
+
+button:active {
+  box-shadow: 0 5px black;
+  transform: translateY(4px);
 }
 
 .test {
@@ -125,7 +131,7 @@ button.selected {
   padding: 10px;
 }
 div#good {
-  background-color: green;
+  background-color: lightgreen;
 }
 
 div#bad {
@@ -134,15 +140,6 @@ div#bad {
 
 div#neutral {
   background-color: black;
-}
-a#good {
-  text-decoration: none;
-  color: green;
-}
-
-a#bad {
-  text-decoration: none;
-  color: red;
 }
 
 #buttons {
@@ -170,6 +167,10 @@ img {
 
 a {
   color: black;
+}
+
+a#list {
+  text-decoration: none;
 }
 
 .new {
@@ -207,4 +208,8 @@ a {
 .top {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+
+#listTitle {
+  color: white;
 }

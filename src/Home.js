@@ -66,12 +66,7 @@ class Home extends Component {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img
-                      id="coverArt"
-                      onClick={this.onFrameClicked}
-                      alt=""
-                      src={this.state.song.art}
-                    />
+                    <img id="coverArt" alt="" src={this.state.song.art} />
                   </a>
                 </div>
                 <br />
@@ -159,14 +154,6 @@ class Home extends Component {
       this.playerRef.current.play();
     } catch (err) {}
     this.setState({ hasStarted: true });
-  };
-
-  onFrameClicked = () => {
-    if (this.state.iframeClass === "Safari") {
-      this.setState({ iframeClass: "notSafari" });
-    } else {
-      this.setState({ iframeClass: "Safari" });
-    }
   };
 
   onMount = () => {
