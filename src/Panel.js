@@ -16,12 +16,15 @@ const Panel = props => {
   if (props.ready) {
     return (
       <div id={verdicts(props)} className="Player top">
-        <span id="buttons">
+        <div id="buttons" align="left">
+          <FontAwesome name="users" />
+          {numOnline(props.numOnline)}
+        </div>
+        <div id="buttons">
           <FontAwesome name="thumbs-up" /> {props.likes}
           {"    "}
           <FontAwesome name="thumbs-down" /> {props.dislikes}
-          {numOnline(props.numOnline)}
-        </span>
+        </div>
       </div>
     );
   } else {
@@ -31,7 +34,7 @@ const Panel = props => {
 
 const numOnline = num => {
   if (num) {
-    return ` (${num}) `;
+    return ` ${num} `;
   }
 };
 export default Panel;

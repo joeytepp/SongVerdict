@@ -206,8 +206,10 @@ a#list {
 }
 
 .top {
+  display: grid;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 #listTitle {
