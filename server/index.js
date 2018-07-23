@@ -30,7 +30,7 @@ const options = {
   form: { grant_type: "client_credentials" }
 };
 
-mongoose.connect("mongodb://127.0.0.1/SongVerdict");
+mongoose.connect(process.env.MONGO_URL);
 getSong();
 
 client.on("connection", socket => {
