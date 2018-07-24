@@ -161,7 +161,6 @@ class Home extends Component {
   };
 
   componentDidMount() {
-    window.addEventListener("beforeunload", this.onMount);
     socket.on("startTime", time => {
       this.setState(time);
       intervalId = setInterval(() => {
@@ -169,6 +168,7 @@ class Home extends Component {
           this.setState({ time: this.state.time - 1 });
         }
       }, 1000);
+      window.addEventListener("pagehide", this.onMount);
     });
     socket.on("newSong", song => {
       if (this.state.hasStarted) {
@@ -212,7 +212,7 @@ class Home extends Component {
 
   componentWillUnmount() {
     this.onMount();
-    window.removeEventListener("beforeunload", this.onMount);
+    window.removeEventListener("pagehide", this.onMount);
   }
   onButtonClicked = verdict => () => {
     this.onVerdictChanged(this.state.verdict, verdict);

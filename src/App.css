@@ -66,9 +66,9 @@
   margin-left: 10vw;
 }
 #goodBad {
-  margin-top: -3px;
+  margin-top: -5px;
   margin-right: 10vw;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 #songName {
@@ -133,10 +133,32 @@ button.selected {
 }
 div#good {
   background-color: lightgreen;
+  animation: fadeToGreen;
+  animation-duration: 0.5s;
+}
+
+@keyframes fadeToGreen {
+  0% {
+    background-color: black;
+  }
+  100% {
+    background-color: lightgreen;
+  }
 }
 
 div#bad {
   background-color: red;
+  animation: fadeToRed;
+  animation-duration: 0.5s;
+}
+
+@keyframes fadeToRed {
+  0% {
+    background-color: black;
+  }
+  100% {
+    backgorund-color: red;
+  }
 }
 
 div#neutral {
