@@ -6,6 +6,7 @@ import Button from "./Button";
 import Panel from "./Panel";
 import Header from "./Header";
 import FontAwesome from "react-fontawesome";
+import Feed from "./Feed";
 
 // Defaults
 const verdict = "None";
@@ -26,9 +27,12 @@ class Home extends Component {
       dislikes,
       hasStarted: false,
       likeFlashes: [],
-      dislikeFlashes: []
+      dislikeFlashes: [],
+      messages: [],
+      showFeed: true
     };
     this.playerRef = React.createRef();
+    this.inputRef = React.createRef();
   }
 
   render() {
@@ -56,10 +60,16 @@ class Home extends Component {
             dislikes={this.state.dislikes}
             ready={this.state.ready}
             numOnline={this.state.numOnline}
+            toggleFeed={this.toggleFeed}
           />
           <div className="Player actual">
             {this.state.ready ? (
-              <div>
+              <div className="mainDiv">
+                <Feed
+                  list={this.state.messages}
+                  submit={this.handleSubmitMessage}
+                  show={this.state.showFeed}
+                />
                 <div>
                   <a
                     href={this.state.song.externalUrl}
@@ -72,7 +82,7 @@ class Home extends Component {
                 <br />
                 <div id="songInfo">
                   <h2 id="songName">{this.state.song.song}</h2>
-                  <p class="songInfo">
+                  <p className="songInfo">
                     {this.state.song.artist} - {this.state.song.album}
                   </p>
                 </div>
@@ -103,13 +113,30 @@ class Home extends Component {
                 </a>
                 {this.state.hasStarted ? (
                   <h3>
-                    <span role="img" aria-label="tada" />&#x1F389; Joining the
-                    party in {this.state.time ? this.state.time : "a moment"}
+                    <span role="img" aria-label="tada" />
+                    &#x1F389; Joining the party in{" "}
+                    {this.state.time ? this.state.time : "a moment"}
                   </h3>
                 ) : (
                   <div>
-                    <button id="startButton" onClick={this.onStart}>
-                      Start
+                    <input
+                      type="text"
+                      placeholder="Screen name"
+                      ref={this.inputRef}
+                    />
+                    <button
+                      id="startButton"
+                      onClick={() => {
+                        try {
+                          this.playerRef.current.load();
+                          this.playerRef.current.play();
+                        } catch (err) {}
+                        socket.emit("createUser", {
+                          userName: this.inputRef.current.value
+                        });
+                      }}
+                    >
+                      Go
                     </button>
                   </div>
                 )}
@@ -147,28 +174,32 @@ class Home extends Component {
     );
   }
 
-  onStart = () => {
-    socket.emit("getTime", {});
-    try {
-      this.playerRef.current.load();
-      this.playerRef.current.play();
-    } catch (err) {}
-    this.setState({ hasStarted: true });
-  };
-
-  onMount = () => {
-    socket.emit("updateNumOnline", { num: this.state.numOnline - 1 });
+  toggleFeed = () => {
+    this.setState({ showFeed: !this.state.showFeed });
   };
 
   componentDidMount() {
-    socket.on("startTime", time => {
-      this.setState(time);
+    socket.on("userFailed", data => {
+      const { message } = data;
+      alert(message);
+    });
+    socket.on("newMessage", message => {
+      if (this.state.ready) {
+        this.setState({ messages: [...this.state.messages, message] });
+      }
+    });
+    socket.on("startTime", data => {
+      const { time } = data;
+      const userName = data;
+
+      this.userName = userName;
+      this.setState({ time, hasStarted: true });
+
       intervalId = setInterval(() => {
         if (this.state.time > 0) {
           this.setState({ time: this.state.time - 1 });
         }
       }, 1000);
-      window.addEventListener("pagehide", this.onMount);
     });
     socket.on("newSong", song => {
       if (this.state.hasStarted) {
@@ -187,6 +218,12 @@ class Home extends Component {
           likes,
           dislikes
         });
+        const newMessage = {
+          userName: "Now Playing",
+          message: `${song.song} - ${song.artist}`,
+          icon: "play"
+        };
+        this.setState({ messages: [...this.state.messages, newMessage] });
         try {
           this.playerRef.current.load();
         } catch (err) {}
@@ -208,11 +245,26 @@ class Home extends Component {
     socket.on("numOnline", data => {
       this.setState(data);
     });
+    this.inputRef.current.addEventListener("keyup", event => {
+      if (event.keyCode === 13) {
+        socket.emit("createUser", { userName: this.inputRef.current.value });
+      }
+      try {
+        this.playerRef.current.load();
+        this.playerRef.current.play();
+      } catch (err) {}
+    });
+  }
+
+  handleSubmitMessage(e) {
+    if (e.key === "Enter" && e.target.value.replace(/\s/g, "").length) {
+      socket.emit("sendMessage", { message: e.target.value });
+      e.target.value = "";
+    }
   }
 
   componentWillUnmount() {
-    this.onMount();
-    window.removeEventListener("pagehide", this.onMount);
+    socket.emit("leaving", {});
   }
   onButtonClicked = verdict => () => {
     this.onVerdictChanged(this.state.verdict, verdict);

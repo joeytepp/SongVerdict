@@ -9,6 +9,7 @@
     "dotenv": "^6.0.0",
     "font-awesome": "^4.7.0",
     "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.10",
     "mongoose": "^5.2.3",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",

@@ -25,6 +25,11 @@ const Panel = props => {
           {"    "}
           <FontAwesome name="thumbs-down" /> {props.dislikes}
         </div>
+        <div id="buttons" align="right">
+          <p>
+            <input type="checkbox" onClick={props.toggleFeed} /> Hide Feed
+          </p>
+        </div>
       </div>
     );
   } else {

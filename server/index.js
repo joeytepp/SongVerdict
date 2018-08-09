@@ -4,14 +4,15 @@ dotenv.config();
 const client = require("socket.io").listen(4000).sockets;
 const mongoose = require("mongoose");
 const request = require("request");
+const _ = require("lodash");
 
 const { base64encode, getRandom, randomLetter } = require("./util");
 const Song = require("./Song");
 const refreshToken = base64encode(
   `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
 );
+const users = {};
 
-let numOnline = 0;
 let accessToken = "abc123";
 let likes = 0;
 let dislikes = 0;
@@ -34,16 +35,78 @@ mongoose.connect(process.env.MONGO_URL);
 getSong();
 
 client.on("connection", socket => {
-  socket.on("getTime", () => {
-    numOnline++;
-    client.emit("numOnline", { numOnline });
-    let time = 30 - Math.floor((new Date().getTime() - startTime) / 1000);
-    socket.emit("startTime", { time });
+  socket.on("createUser", data => {
+    const { userName } = data;
+    if (_.isEmpty(userName)) {
+      socket.emit("userFailed", {
+        type: "ERROR",
+        message: "Screen name must not be empty"
+      });
+    } else if (userName.length > 20) {
+      socket.emit("userFailed", {
+        type: "ERROR",
+        message: "Screen name must be less than 20 characters"
+      });
+    } else if (
+      _.includes(Object.values(users), userName) ||
+      userName === "Now Playing"
+    ) {
+      socket.emit("userFailed", {
+        type: "ERROR",
+        message: `${userName} is already taken, please pick another name`
+      });
+    } else {
+      users[socket.id] = userName;
+      let time = 30 - Math.floor((new Date().getTime() - startTime) / 1000);
+      socket.emit("startTime", { time, userName });
+      socket.broadcast.emit("newMessage", {
+        userName: users[socket.id],
+        message: "Will be joining the room on the next song!",
+        icon: "sign-in"
+      });
+      client.emit("numOnline", { numOnline: Object.keys(users).length });
+    }
+  });
+
+  ["disconnect", "leaving"].forEach(message => {
+    socket.on(message, () => {
+      if (_.includes(Object.keys(users), socket.id)) {
+        client.emit("newMessage", {
+          userName: users[socket.id],
+          message: "Left the room.",
+          icon: "sign-out"
+        });
+        delete users[socket.id];
+        client.emit("numOnline", { numOnline: Object.keys(users).length });
+      }
+    });
+  });
+
+  socket.on("sendMessage", data => {
+    client.emit("newMessage", {
+      ...data,
+      userName: users[socket.id],
+      icon: "comment"
+    });
   });
 
   socket.on("opinion", data => {
     likes += data.likes;
     dislikes += data.dislikes;
+    if (data.likes > 0) {
+      client.emit("newMessage", {
+        userName: users[socket.id],
+        message: "Liked the song",
+        icon: "thumbs-up"
+      });
+    } else if (data.dislikes > 0) {
+      client.emit("newMessage", {
+        userName: users[socket.id],
+        message: "Disliked the song",
+        icon: "thumbs-down"
+      });
+    }
+    const numOnline = Object.keys(users).length;
     if (dislikes == numOnline && numOnline >= 3) {
       saveLastSong();
       client.emit("newSong", currentSong);
@@ -75,11 +138,6 @@ client.on("connection", socket => {
         socket.emit(`${type}ListReceived`, data);
       });
   });
-
-  socket.on("updateNumOnline", data => {
-    numOnline = data.num;
-    client.emit("numOnline", { numOnline });
-  });
 });
 
 function getSong() {
@@ -110,7 +168,7 @@ function getSong() {
       }
 
       let songs = body.tracks.items.filter(
-        song => song.album.images[1] && song.preview_url
+        song => song && song.album && song.album.images[1] && song.preview_url
       );
 
       if (!songs.length) {
@@ -153,12 +211,16 @@ function intervalSet() {
     saveLastSong();
     likes = 0;
     dislikes = 0;
-    getSong();
+    try {
+      getSong();
+    } catch (err) {
+      console.log(err);
+    }
   }, 30 * 1000);
 }
 
 function saveLastSong() {
-  if (lastSong && numOnline > 0) {
+  if (lastSong && Object.keys(users).length > 0) {
     let saveSong = new Song({
       _id: new mongoose.Types.ObjectId(),
       ...lastSong,

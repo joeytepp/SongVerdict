@@ -1,0 +1,103 @@
+div.feed {
+  position: absolute;
+  z-index: 3;
+}
+div.feedMain {
+  position: absolute;
+  z-index: 3;
+  width: 80vw;
+  border: red;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: black;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+div.message {
+  position: relative;
+  text-align: left;
+  background-color: white;
+  margin-right: auto;
+  margin-left: auto;
+  margin: 10px;
+  padding: 3px;
+  animation: fadeIn;
+  animation-duration: 0.5s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+div.inputContainer {
+  align-self: bottom;
+  position: relative;
+  z-index: 3;
+  margin-top: 40vh;
+  align-self: center;
+  width: 70vw;
+}
+
+div.input {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+input.feedInput {
+  font-size: 12px;
+  box-shadow: none;
+  margin: 5px;
+  width: 90%;
+  opacity: 0.8;
+}
+
+.thumbs-up {
+  color: grey;
+}
+.thumbs-down {
+  color: grey;
+}
+
+.sign-in {
+  color: grey;
+}
+
+.sign-out {
+  color: grey;
+}
+
+.play {
+  color: grey;
+}
+
+.comment {
+  border-radius: 5px;
+}
+
+.thumbs-up-icon {
+  color: lightgreen;
+}
+
+.thumbs-down-icon {
+  color: red;
+}
+
+.sign-in-icon {
+  color: lightgreen;
+}
+
+.sign-out-icon {
+  color: red;
+}
+
+.play-icon {
+  color: blue;
+}
+
+.invisible {
+  display: none;
+}

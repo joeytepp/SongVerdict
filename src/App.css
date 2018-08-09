@@ -81,7 +81,20 @@
 }
 
 #startButton {
-  margin: 10px;
+  width: auto;
+  background-color: lightgreen;
+  color: white;
+}
+
+input {
+  font-size: 1.5em;
+  padding: 10px;
+  box-shadow: 0 10px black;
+  border-radius: 20px;
+}
+
+input:focus {
+  outline-style: none;
 }
 
 #coverArt {
@@ -196,6 +209,14 @@ a#list {
   text-decoration: none;
 }
 
+#buttons > p {
+  padding: 0px;
+  margin: 0px;
+}
+
+#buttons > input {
+  margin-top: -5px;
+}
 .new {
   position: fixed;
   color: lightgrey;
@@ -237,4 +258,8 @@ a#list {
 
 #listTitle {
   color: white;
+}
+
+div.mainDiv {
+  position: relative;
 }
