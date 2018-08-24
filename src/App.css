@@ -129,7 +129,6 @@ button:hover {
 
 button:active {
   box-shadow: 0px 0px 5px black inset;
-  box-shadow: 0px 0px 5px black inset;
 }
 
 button:focus {

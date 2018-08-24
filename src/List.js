@@ -2,16 +2,29 @@ import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import FontAwesome from "react-fontawesome";
 import Header from "./Header";
+import { isEmpty } from "lodash";
 
 const socket = socketIOClient(`${process.env.REACT_APP_IP}:4000`);
 
 class List extends Component {
   constructor(args) {
     super(args);
-    this.state = { list: [] };
+    this.state = { list: [], skip: 0, hasHitBottom: false };
   }
+
+  componentWillMount() {
+    socket.emit("List", { type: this.type, skip: this.state.skip });
+    window.onscroll = event => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        if (!this.state.hasHitBottom) {
+          socket.emit("List", { type: this.type, skip: this.state.skip + 20 });
+          this.setState({ hasHitBottom: true });
+        }
+      }
+    };
+  }
+
   render() {
-    socket.emit("List", { type: this.type });
     return (
       <div>
         <Header />
@@ -45,7 +58,14 @@ class List extends Component {
   }
 
   componentDidMount() {
-    socket.on(`${this.type}ListReceived`, list => this.setState({ list }));
+    socket.on(`${this.type}ListReceived`, data => {
+      const hasHitBottom = isEmpty(data);
+      this.setState({
+        list: this.state.list.concat(data),
+        hasHitBottom,
+        skip: this.state.skip + 20
+      });
+    });
   }
 }
 

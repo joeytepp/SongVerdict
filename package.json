@@ -20,9 +20,9 @@
     "socket.io-client": "^2.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts start & nodemon server",
     "build": "react-scripts build",
-    "deploy": "npm run build && sudo serve -l 80 & node server",
+    "deploy": "npm run build && sudo serve build -l 80 & node server",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

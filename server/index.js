@@ -122,7 +122,7 @@ client.on("connection", socket => {
   });
 
   socket.on("List", data => {
-    let { type } = data;
+    let { type, skip } = data;
     let verd = { $gte: -100000000000 };
     let sort = { _id: -1 };
     if (type === "Good") {
@@ -134,6 +134,8 @@ client.on("connection", socket => {
     }
     Song.find({ verdict: verd })
       .sort(sort)
+      .skip(skip)
+      .limit(20)
       .then(data => {
         socket.emit(`${type}ListReceived`, data);
       });
