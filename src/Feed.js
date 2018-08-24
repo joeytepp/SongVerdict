@@ -7,8 +7,8 @@ class Feed extends React.Component {
     return (
       <div className={this.props.show ? "feed" : "invisible"}>
         <div className="feedMain" ref="feed">
-          {this.props.list.map(message => (
-            <div className={`message ${message.icon}`}>
+          {this.props.list.map((message, key) => (
+            <div className={`message ${message.icon}`} key={key}>
               <FontAwesome
                 className={`${message.icon}-icon`}
                 name={message.icon}

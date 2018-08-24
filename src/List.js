@@ -16,17 +16,19 @@ class List extends Component {
       <div>
         <Header />
         <h1 id="listTitle" align="center">
-          {this.type} songs{this.type === "All" ? "" : ", as voted by you :)"}
+          {this.type} songs
+          {this.type === "All" ? "" : ", as voted by you :)"}
         </h1>
-        {this.state.list.map(i => {
+        {this.state.list.map((i, key) => {
           return (
             <a
               id="list"
               href={i.externalUrl}
               target="_blank"
               rel="noopener noreferrer"
+              key={key}
             >
-              <div className="Player">
+              <div className="Player song-list">
                 <img src={i.art} alt="" width="20" height="20" /> Song: {i.song}{" "}
                 <p>
                   <FontAwesome name="thumbs-up" /> {i.likes}{" "}

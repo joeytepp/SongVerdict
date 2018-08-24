@@ -127,10 +127,7 @@ class Home extends Component {
                     <button
                       id="startButton"
                       onClick={() => {
-                        try {
-                          this.playerRef.current.load();
-                          this.playerRef.current.play();
-                        } catch (err) {}
+                        this.startSong();
                         socket.emit("createUser", {
                           userName: this.inputRef.current.value
                         });
@@ -156,16 +153,16 @@ class Home extends Component {
             updateState={this.onButtonClicked("Dislike")}
           />
         </div>
-        {this.state.likeFlashes.map(() => {
+        {this.state.likeFlashes.map((i, key) => {
           return (
-            <div className="new Like">
+            <div className="new Like" key={key}>
               <FontAwesome name="thumbs-up" />
             </div>
           );
         })}
-        {this.state.dislikeFlashes.map(() => {
+        {this.state.dislikeFlashes.map((i, key) => {
           return (
-            <div className="new Dislike">
+            <div className="new Dislike" key={key}>
               <FontAwesome name="thumbs-down" />
             </div>
           );
@@ -178,6 +175,12 @@ class Home extends Component {
     this.setState({ showFeed: !this.state.showFeed });
   };
 
+  startSong = () => {
+    try {
+      this.playerRef.current.load();
+      this.playerRef.current.play();
+    } catch (err) {}
+  };
   componentDidMount() {
     socket.on("userFailed", data => {
       const { message } = data;
@@ -249,10 +252,7 @@ class Home extends Component {
       if (event.keyCode === 13) {
         socket.emit("createUser", { userName: this.inputRef.current.value });
       }
-      try {
-        this.playerRef.current.load();
-        this.playerRef.current.play();
-      } catch (err) {}
+      this.startSong();
     });
   }
 
