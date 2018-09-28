@@ -10,4 +10,4 @@ After cloning the repo, run the following scripts, run
 
 Then, create a .env file in the root of your project folder following the `.envexample` file (you will need to obtain credentials from [Spotify](https://developer.spotify.com/documentation/web-api/). Finally, run
 
-`npm start & node server`
+`npm start`
